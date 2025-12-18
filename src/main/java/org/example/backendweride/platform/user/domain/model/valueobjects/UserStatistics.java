@@ -11,7 +11,7 @@ public class UserStatistics {
     private Double totalSpent;
     private Double averageRating;
 
-    protected UserStatistics() {
+    public UserStatistics() {
         this.totalTrips = 0;
         this.totalDistance = 0.0;
         this.totalSpent = 0.0;

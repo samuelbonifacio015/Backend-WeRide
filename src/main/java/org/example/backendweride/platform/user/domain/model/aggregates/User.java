@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import org.example.backendweride.platform.shared.domain.model.aggregates.AuditableAbstractAggregateRoot;
+import org.example.backendweride.platform.user.domain.model.commands.CreateUserCommand;
 import org.example.backendweride.platform.user.domain.model.valueobjects.UserPreferences;
 import org.example.backendweride.platform.user.domain.model.valueobjects.UserStatistics;
 import org.example.backendweride.platform.user.domain.model.valueobjects.VerificationStatus;
@@ -103,4 +104,4 @@ public class User extends AuditableAbstractAggregateRoot<User> {
         this.statistics = new UserStatistics(totalTrips, totalDistance, totalSpent, averageRating);
     }
 }
-}
+
