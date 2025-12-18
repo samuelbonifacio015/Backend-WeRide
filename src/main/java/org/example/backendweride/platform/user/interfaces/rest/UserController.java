@@ -37,10 +37,15 @@ public class UserController {
     })
     public ResponseEntity<UserResource> createUser(@RequestBody CreateUserResource resource) {
         var command = CreateUserCommandFromResourceAssembler.toCommandFromResource(resource);
-        var userId = userCommandService.handle(command);
-        var user = userQueryService.handle(new GetUserByIdQuery(userId));
-        return user.map(u -> new ResponseEntity<>(UserResourceFromEntityAssembler.toResourceFromEntity(u), HttpStatus.CREATED))
-                .orElseGet(() -> ResponseEntity.badRequest().build());
+        Long userId = userCommandService.handle(command);
+        var user = userQueryService
+                .handle(new GetUserByIdQuery(userId))
+                .orElseThrow(() -> new IllegalStateException(
+                        "User was created but not found with id: " + userId
+                ));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(UserResourceFromEntityAssembler.toResourceFromEntity(user));
     }
 
     @GetMapping("/{userId}")

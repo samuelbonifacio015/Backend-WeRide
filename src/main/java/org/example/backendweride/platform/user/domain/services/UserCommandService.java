@@ -7,7 +7,7 @@ import org.example.backendweride.platform.user.domain.model.commands.VerifyUserC
 import java.util.Optional;
 
 public interface UserCommandService {
-    Optional<Long> handle(CreateUserCommand command);
+    Long handle(CreateUserCommand command);
     boolean handle(UpdateUserPorfileCommand command);
     boolean handle(VerifyUserCommand command);
 }
