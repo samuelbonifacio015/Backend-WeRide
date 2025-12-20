@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "plans")
 @EntityListeners(AuditingEntityListener.class)
 public class Plan {
     @Id
