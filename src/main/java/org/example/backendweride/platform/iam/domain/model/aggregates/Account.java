@@ -17,6 +17,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "accounts")
 public class Account extends AbstractAggregateRoot<Account> {
 
     @Id

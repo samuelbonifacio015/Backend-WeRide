@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Table(name = "trips")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class Trip {

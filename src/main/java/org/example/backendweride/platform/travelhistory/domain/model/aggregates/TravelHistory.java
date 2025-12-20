@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Date;
 
+@Table(name = "travel_histories")
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class TravelHistory {
