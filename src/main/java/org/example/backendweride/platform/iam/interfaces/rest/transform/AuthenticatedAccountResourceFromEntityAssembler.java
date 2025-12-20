@@ -10,7 +10,12 @@ import org.example.backendweride.platform.iam.interfaces.rest.resources.Authenti
  *          into an AuthenticatedAccountResource for REST API responses.
  */
 public class AuthenticatedAccountResourceFromEntityAssembler {
+
     public static AuthenticatedAccountResource toResourceFromEntity(Account entity, String token) {
-        return new AuthenticatedAccountResource(entity.getId(), token);
+        return new AuthenticatedAccountResource(
+                entity.getId(),
+                entity.getUserName(),
+                token
+        );
     }
 }

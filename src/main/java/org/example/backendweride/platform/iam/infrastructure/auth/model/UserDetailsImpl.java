@@ -39,9 +39,9 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public static UserDetailsImpl build(Account account) {
-        // For now, WeRide only handles the CLIENT role
-        // All authenticated users have this single role
-        var authorities = List.of(new SimpleGrantedAuthority("ROLE_CLIENT"));
+        var authorities = account.getRoles().stream()
+                .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                .toList();
 
         return new UserDetailsImpl(
                 account.getUserName(),

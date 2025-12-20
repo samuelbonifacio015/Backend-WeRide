@@ -1,19 +1,18 @@
 package org.example.backendweride.platform.iam.domain.model.aggregates;
+
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.example.backendweride.platform.iam.domain.model.commands.SignUpCommand;
+import org.example.backendweride.platform.iam.domain.model.entities.Role;
 import org.example.backendweride.platform.iam.domain.model.valueobjects.ProfileId;
-import org.springframework.data.domain.AbstractAggregateRoot;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.domain.AbstractAggregateRoot;
 
-/**
- * Account Aggregate Root
- *
- * @summary Represents an account in WeRide Platform.
- */
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 @Entity
 @NoArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
@@ -22,94 +21,48 @@ public class Account extends AbstractAggregateRoot<Account> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
     private Long id;
 
-    @NotBlank
     @Getter
-    @Size(max=20)
-    @Column(unique = true)
+    @Column(nullable = false, unique = true)
     private String userName;
 
-    @NotBlank
     @Getter
+    @Column(nullable = false)
     private String password;
 
     @Embedded
-    @Getter
     private ProfileId profileId;
 
-    public Account(String username, String password) {
-        if (username == null || username.isBlank()) {
-            throw new IllegalArgumentException("Username cannot be null or empty");
-        }
-        if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("Password cannot be null or empty");
-        }
+    @Getter
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "account_roles",
+            joinColumns = @JoinColumn(name = "account_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<Role> roles = new HashSet<>();
+
+    public Account(String username, String password, List<Role> roles) {
+        if (username == null || username.isBlank()) throw new IllegalArgumentException("Username is required");
+        if (password == null || password.isBlank()) throw new IllegalArgumentException("Password is required");
         this.userName = username;
         this.password = password;
+        this.roles = new HashSet<>(roles);
     }
 
-    public Account(String username, String password, ProfileId profileId) {
-        this(username, password);
-        this.profileId = profileId;
-    }
-
-    public Account(SignUpCommand command) {
-        if (command == null) {
-            throw new IllegalArgumentException("SignUpCommand cannot be null");
-        }
-        if (command.username() == null || command.username().isBlank()) {
-            throw new IllegalArgumentException("Username cannot be null or empty");
-        }
-        if (command.password() == null || command.password().isBlank()) {
-            throw new IllegalArgumentException("Password cannot be null or empty");
-        }
-        this.userName = command.username();
-        this.password = command.password();
-    }
-
-    public Account(SignUpCommand command, String hashedPassword) {
-        if (command == null) {
-            throw new IllegalArgumentException("SignUpCommand cannot be null");
-        }
-        if (command.username() == null || command.username().isBlank()) {
-            throw new IllegalArgumentException("Username cannot be null or empty");
-        }
-        if (hashedPassword == null || hashedPassword.isBlank()) {
-            throw new IllegalArgumentException("Hashed password cannot be null or empty");
-        }
+    public Account(SignUpCommand command, String hashedPassword, Role defaultRole) {
+        if (command == null) throw new IllegalArgumentException("SignUpCommand is required");
+        if (command.username() == null || command.username().isBlank()) throw new IllegalArgumentException("Username is required");
+        if (hashedPassword == null || hashedPassword.isBlank()) throw new IllegalArgumentException("Password is required");
         this.userName = command.username();
         this.password = hashedPassword;
+        this.roles = new HashSet<>();
+        this.roles.add(defaultRole);
     }
 
-    public Account(SignUpCommand command, String hashedPassword, ProfileId profileId) {
-        this(command, hashedPassword);
-        this.profileId = profileId;
-    }
+    public Long getId() { return id; }
 
-    public Account updatePassword(String password) {
-        if (password == null || password.isBlank()) {
-            throw new IllegalArgumentException("Password cannot be null or empty");
-        }
-        this.password = password;
-        return this;
-    }
+    public String getUserName() { return userName; }
 
-    public Account updateUserName(String userName) {
-        if (userName == null || userName.isBlank()) {
-            throw new IllegalArgumentException("Username cannot be null or empty");
-        }
-        this.userName = userName;
-        return this;
-    }
-
-    public Account updateProfileId(ProfileId profileId) {
-        if (profileId == null) {
-            throw new IllegalArgumentException("ProfileId cannot be null");
-        }
-        this.profileId = profileId;
-        return this;
-    }
-
+    public void updateProfileId(ProfileId profileId) { this.profileId = profileId; }
 }
