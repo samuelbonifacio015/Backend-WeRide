@@ -1,6 +1,8 @@
 package org.example.backendweride.platform.booking.infraestructure.persistence.jpa;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.time.LocalDate;
@@ -17,26 +19,28 @@ import java.math.BigDecimal;
 public class BookingEntity {
 
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private String customerId;
-    private String vehicleId;
+    private Long customerId;
+    private Long vehicleId;
+
     private LocalDate date;
     private LocalTime unlockTime;
     private int durationMinutes;
     private BigDecimal pricePerMinute;
     private BigDecimal totalPrice;
-    private String status; // draft, confirmed, cancelled
+    private String status;
 
-    // getters and setters
-    public String getId() { return id; }
-    public void setId(String id) { this.id = id; }
 
-    public String getCustomerId() { return customerId; }
-    public void setCustomerId(String customerId) { this.customerId = customerId; }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getVehicleId() { return vehicleId; }
-    public void setVehicleId(String vehicleId) { this.vehicleId = vehicleId; }
+    public Long getCustomerId() { return customerId; }
+    public void setCustomerId(Long customerId) { this.customerId = customerId; }
+
+    public Long getVehicleId() { return vehicleId; }
+    public void setVehicleId(Long vehicleId) { this.vehicleId = vehicleId; }
 
     public LocalDate getDate() { return date; }
     public void setDate(LocalDate date) { this.date = date; }
@@ -56,4 +60,3 @@ public class BookingEntity {
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
 }
-
