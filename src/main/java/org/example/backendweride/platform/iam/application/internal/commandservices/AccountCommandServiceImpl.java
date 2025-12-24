@@ -62,9 +62,11 @@ public class AccountCommandServiceImpl implements AccountCommandService {
     @Override
     public Optional<ImmutablePair<Account, String>> handle(SignInCommand command) {
         var account = accountRepository.findByUserName(command.username());
+
         if (account.isEmpty() || !hashingService.matches(command.password(), account.get().getPassword())) {
-            throw new RuntimeException("Invalid username or password");
+            return Optional.empty();
         }
+
         if (!hashingService.matches(command.password(), account.get().getPassword()))
             throw new RuntimeException("Invalid password");
         var token = tokenService.generateToken(account.get().getUserName());
