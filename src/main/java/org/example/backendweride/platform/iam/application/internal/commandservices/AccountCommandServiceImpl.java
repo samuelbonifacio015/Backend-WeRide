@@ -1,4 +1,3 @@
-// Java
 package org.example.backendweride.platform.iam.application.internal.commandservices;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -15,6 +14,7 @@ import org.example.backendweride.platform.iam.infrastructure.persistence.jpa.rep
 import org.example.backendweride.platform.iam.infrastructure.persistence.jpa.repositories.RoleRepository;
 import org.example.backendweride.platform.profile.interfaces.acl.ProfileContextFacade;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -37,6 +37,7 @@ public class AccountCommandServiceImpl implements AccountCommandService {
     }
 
     @Override
+    @Transactional
     public Optional<Account> handle(SignUpCommand command) {
         if (accountRepository.existsByUserName(command.username()))
             throw new RuntimeException("User already exists");
@@ -55,6 +56,8 @@ public class AccountCommandServiceImpl implements AccountCommandService {
             var updatedAccount = accountRepository.save(accountCreated);
             return Optional.of(updatedAccount);
         } catch (Exception e) {
+            System.err.println("Error en SignUp: " + e.getMessage());
+            e.printStackTrace();
             throw new RuntimeException("Error saving user: %s".formatted(e.getMessage()));
         }
     }
@@ -62,13 +65,10 @@ public class AccountCommandServiceImpl implements AccountCommandService {
     @Override
     public Optional<ImmutablePair<Account, String>> handle(SignInCommand command) {
         var account = accountRepository.findByUserName(command.username());
-
         if (account.isEmpty() || !hashingService.matches(command.password(), account.get().getPassword())) {
             return Optional.empty();
         }
 
-        if (!hashingService.matches(command.password(), account.get().getPassword()))
-            throw new RuntimeException("Invalid password");
         var token = tokenService.generateToken(account.get().getUserName());
         return Optional.of(ImmutablePair.of(account.get(), token));
     }
